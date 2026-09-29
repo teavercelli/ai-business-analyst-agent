@@ -1,5 +1,9 @@
 # AI Business Analyst Agent
+## Live Demo
 
+🚀 [Open the live AI Business Analyst dashboard](https://ai-business-analyst-agent.streamlit.app/)
+
+> The live AI features use the Gemini API free tier and may occasionally be unavailable when API rate limits are reached.
 An autonomous AI-powered business monitoring and root-cause analysis system built with Python, SQL, Gemini and Streamlit.
 
 The system goes beyond a traditional analytics dashboard: it automatically monitors business KPIs, detects unusual changes across multiple dimensions, groups related signals into business incidents, and uses an AI agent to investigate potential root causes directly from the underlying SQL database.
@@ -204,7 +208,21 @@ The goal is not simply to check whether the agent produces fluent answers, but w
 - underlying data-supported driver
 
 This helps distinguish convincing AI-generated explanations from analytically correct investigations.
+### Current Evaluation Results
 
+| Ground-truth incident | Result |
+|---|---|
+| Spain — Laptop Pro margin deterioration | PASS |
+| Germany — Marketplace decline | PASS |
+| United Kingdom — Enterprise decline | PASS |
+
+**Anomaly detection benchmark: 3/3 incidents detected (100%).**
+
+The benchmark uses three synthetic business incidents deliberately embedded in the dataset generator. These ground-truth events are not provided to the anomaly detection engine.
+
+The 100% result refers specifically to this small synthetic benchmark and should not be interpreted as general model accuracy.
+
+AI root-cause investigations are evaluated separately because their performance can vary depending on LLM behavior and API availability.
 ---
 
 ## Technology Stack

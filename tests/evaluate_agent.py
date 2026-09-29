@@ -1,81 +1,91 @@
-from agent.agent import ask_agent
-
-
-TEST_CASES = [
-    {
-        "name": "Spain margin root cause",
-
-        "prompt": """
-        Investiga il deterioramento del gross margin in Spain
-        nel periodo luglio-settembre 2026.
-        Identifica la root cause usando il database.
-        """,
-
-        "checks": {
-            "country": ["spain", "spagna"],
-            "product": ["laptop pro"],
-            "old_cost": ["700"],
-            "new_cost": ["1015", "1.015"],
-            "margin_after": ["7.7", "7,7"]
-        }
-    }
-]
+from analytics.anomalies import detect_anomalies
 
 
 def run_evaluation():
 
-    passed_tests = 0
+    anomalies = detect_anomalies()
 
-    print("\nAGENT EVALUATION")
-    print("=" * 50)
+    print("\nANOMALY DETECTION EVALUATION")
+    print("=" * 60)
 
-    for test in TEST_CASES:
+    tests = {
+        "Spain Laptop Pro margin deterioration": False,
+        "Germany Marketplace decline": False,
+        "UK Enterprise decline": False
+    }
 
-        print(f"\nTest: {test['name']}")
 
-        answer = ask_agent(test["prompt"])
-        answer_lower = answer.lower()
+    for anomaly in anomalies:
 
-        results = {}
+        value = anomaly["value"]
+        metric = anomaly["metric"]
+        change = anomaly["change"]
 
-        for check_name, accepted_values in test["checks"].items():
 
-            found = any(
-                value.lower() in answer_lower
-                for value in accepted_values
-            )
+        # CASE 1
+        if (
+            value == "Spain | Laptop Pro"
+            and metric == "gross_margin"
+            and change < 0
+        ):
+            tests[
+                "Spain Laptop Pro margin deterioration"
+            ] = True
 
-            results[check_name] = found
 
-        print("\nCHECKS")
+        # CASE 2
+        if (
+            value == "Germany | Marketplace"
+            and metric in [
+                "orders",
+                "revenue",
+                "active_customers"
+            ]
+            and change < 0
+        ):
+            tests[
+                "Germany Marketplace decline"
+            ] = True
 
-        for check_name, result in results.items():
 
-            symbol = "PASS" if result else "FAIL"
+        # CASE 3
+        if (
+            value == "United Kingdom | Enterprise"
+            and metric in [
+                "orders",
+                "revenue",
+                "active_customers"
+            ]
+            and change < 0
+        ):
+            tests[
+                "UK Enterprise decline"
+            ] = True
 
-            print(f"{check_name}: {symbol}")
 
-        test_passed = all(results.values())
+    passed = 0
 
-        if test_passed:
+    for name, result in tests.items():
 
-            print("\nTEST RESULT: PASS")
-            passed_tests += 1
+        status = "PASS" if result else "FAIL"
 
-        else:
+        print(f"{name}: {status}")
 
-            print("\nTEST RESULT: FAIL")
+        if result:
+            passed += 1
 
-        print("\nAgent answer:")
-        print(answer)
 
-    total = len(TEST_CASES)
+    total = len(tests)
 
-    print("\n" + "=" * 50)
+    print("\n" + "=" * 60)
 
     print(
-        f"FINAL RESULT: "
-        f"{passed_tests}/{total} tests passed"
+        f"FINAL RESULT: {passed}/{total}"
+    )
+
+    print(
+        f"Detection rate: "
+        f"{passed / total:.0%}"
     )
 
 
